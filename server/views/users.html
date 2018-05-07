@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title> <%= title %> </title>
+        <script src="avalon.js"></script>
+             
+        <style type="text/css">
+            body {
+                padding: 50px;
+                font: 13px Helvetica, Arial, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+    	<h1>Users</h1>
+		<ul id="users">
+		    <% users.forEach(function(user){ %>
+		    <li><%= user.name %> <<%= user.email %>></li>
+		    <% }) %>
+		</ul>
+		<hr/>
+		<!-- <script>
+			//需要引入avalon一个循环的js好像。。。
+		    avalon.define("test", function(vm){
+		        vm.users = <%- JSON.stringify(users) %>
+		    })
+		</script>
+		<ul ms-each-el="users" ms-controller="test">
+		       <li>{{el.name}} <{{el.email}}></li>
+		</ul> -->
+	</body>
+</html>

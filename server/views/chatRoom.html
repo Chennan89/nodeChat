@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="format-detection" content="email=no"/>
+        <meta content="width=device-width,width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no,user-scalable=0" name="viewport">
+        <title>公共频道</title>
+        <link rel="stylesheet" type="text/css" href="/css/style.css" />
+        <script src="/js/lib/jquery-1.11.0.js"></script>
+        <script>
+            var u = navigator.userAgent;
+            var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+            var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+            var goldTag='';
+            $(function(){
+                if(isAndroid){
+                    $("#gold").attr("src",'/images/beans.png');
+                    goldTag="金豆";
+                }else{
+                    $("#gold").attr("src",'/images/Gold.png');
+                    goldTag="金幣";
+                }
+            })
+            
+        </script>
+        <script src="/js/lib/touche.js"></script>
+        <script src="/js/lib/p-pull-refresh.js"></script>
+        <script src="/js/socket.io.js"></script>
+    </head>
+    <body>
+        <input type="hidden" name="host" value="<%= host %>" id="host" />
+        <input type="hidden" name="userid" value="<%= userid %>" id="userid" />
+        <input type="hidden" name="username" value="<%= username %>" id="username" />
+        <input type="hidden" name="picname" value="<%= picname %>" id="picname" />
+        <input type="hidden" name="itemsPerPage" value="<%= itemsPerPage %>" id="itemsPerPage" />
+        <input type="hidden" name="currentPage" value="1" id="currentPage" />
+        <!-- <input type="hidden" name="level" value="<%= level %>" id="level" /> -->
+        <input type="hidden" name="level" value="4" id="level" />
+        <img src="/images/X.png" id="close" onclick="CHAT.logout();" />
+        <div id="screenBorder" style="border:6px solid #000;border-image-source:url(/images/BG1.png);border-image-slice:9 9 9 9;border-image-repeat:repeat;">
+            <div style="width:100%;height:1px;background:radial-gradient(#66D9EF -24%, transparent 100%);}"></div>
+        </div>
+        <div id="mask"></div>
+        
+        <div id="chatbox" class="container">
+            <div style="display:none;background:#3d3d3d;height:40px; width: 100%;font-size:12px;">
+                <div style="line-height:40px;color:#fff;">
+                    <span style="text-align:left;margin-left:10px;">公共頻道</span>
+                    <span style="float:right; margin-right:10px;">
+                        <img src="https://www.gold-rush-casino.com/figure/image/face/<%= picname %>.png" style="width:30px;margin-top:5px;" />
+                        <span id="showusername"></span> | 
+                        <a href="javascript:;" onclick="CHAT.logout()" style="color:#fff;">退出</a>
+                    </span>
+                </div>
+            </div>
+            <div id="channels" style="height:50px;width:100%;margin-bottom:-4px;">
+                <span style="float:left;display:inline-block;height:40px;width:21px;margin-top:10px;margin-left:4%;background-image:url(/images/Channel.png);background-repeat:no-repeat;background-size:320% 100%;background-position:0 0;"></span>
+                <span style="float:left;display:inline-block;height:40px;width:5em;margin-top:10px;margin-left:0;background-image:url(/images/Channel.png);background-repeat:repeat-x;background-size:320% 100%;background-position:38% 0;letter-spacing:0.2em;color:#FFF;font-weight:bold;font-family:微軟雅黑,黑體;font-size:1em;text-align:center;padding-top:10px;">公共頻道</span>
+                <span style="float:left;display:inline-block;height:40px;width:21px;margin-top:10px;margin-left:0;background-image:url(/images/Channel.png);background-repeat:no-repeat;background-size:320% 100%;background-position:bottom right;"></span>
+            </div>
+            <div id="doc">
+                <div id="chatTop" style="width:96%;height:20px;margin-left:2%;background-size:100%;background-image:url(/images/Chat.png);background-size:100%;background-repeat:no-repeat;"></div>
+                <div id="chat" style="background-color:rgba(0,0,0,0.5);">
+                    <div class="loading-warp">
+                        <div class="box">
+                            <div>
+                                <img src="/images/loading.gif" />
+                                <!-- <span class="text">下拉开始刷新</span> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="message" class="message">
+                        <div id="onlinecount" style="background:#EFEFF4; font-size:12px; margin-top:10px; margin-left:10px; color:#666;">
+                        </div>
+                    </div>
+                </div>
+                <div id="chatBottom" style="width:96%;height:20px;margin-left:2%;background-size:100%;background-image:url(/images/Chat.png);background-size:100%;background-repeat:no-repeat;background-position:right bottom;"></div>
+                <div id="subArea" style="position:absolute;width:100%;">
+                        <img id="faceIcon" src="/images/faces/laugh.png" class="btm" />
+
+                    <div style="background-image:url(/images/Input.png);background-size:100% 100%;/*background-position:-20px -20px;*/background-repeat:no-repeat;max-height:65px;" id="content" id="content" class="btm">
+                        <p contenteditable="true" style="line-height:25px;max-height:55px;/*height:34px;line-height:34px;*/overflow-y:scroll;"></p>
+                    </div>
+
+                    <ul id="faceList">
+                        <li>
+                            <img src="/images/faces/excitement.png" title="excitement" />
+                            <img src="/images/faces/fantasy.png" title="fantasy" />
+                            <img src="/images/faces/lewd.png" title="lewd" />
+                            <img src="/images/faces/pleased.png" title="pleased" />
+                            <img src="/images/faces/laugh.png" title="laugh" />
+                            <img src="/images/faces/sweat.png" title="sweat" />
+                        </li>
+                        <li>
+                            <img src="/images/faces/adorable.png" title="adorable" />
+                            <img src="/images/faces/anger.png" title="anger" />
+                            <img src="/images/faces/awkward.png" title="awkward" />
+                            <img src="/images/faces/blackline.png" title="blackline" />
+                            <img src="/images/faces/contempt.png" title="contempt" />
+                            <img src="/images/faces/sleepy.png" title="sleepy" />
+                        </li>
+                        <li>
+                            <img src="/images/faces/cry.png" title="cry" />
+                            <img src="/images/faces/dizzy.png" title="dizzy" />
+                            <img src="/images/faces/however.png" title="however" />
+                            <img src="/images/faces/spit.png" title="spit" />
+                        </li>
+                    </ul>
+                    <div class="action" onclick="CHAT.submit();">
+                        <p style="display:inline-block;position:absolute;height:30px;top:8px;width:75px;left:15px;line-height:30px;">發佈(100</p>
+                        <img id="gold" style="height:28px;position:absolute;top:10px;left:85px;">
+                        <p style="display:inline-block;position:absolute;height:30px;top:8px;left:106px;line-height:30px;">)</p>
+                        <!-- <button type="button" id="mjr_send" onclick="CHAT.submit();">提交</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="popup">
+            <img src="/images/X.png" style="height:40px;position:absolute;top:-10px;right:-10px;" class="ok" />
+            <div id="pop1" style="">
+                <div id="pop2" style="">
+                    <div id="charge" style="">
+                        <h1 style="">溫馨提示</h1>
+                        <p style="line-height:2em;" id="popContent"></p>
+                        <p style="background:transparent;text-align:center;padding:0;margin-top:5px;">
+                            <button id="ok" style="">知道了</button>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div style="width:100%;height:1px;position:absolute;bottom:6px;background:radial-gradient(#66D9EF -24%, transparent 100%);}"></div>
+        <div id="toastOuter"><p id="toast">中文不能超過50字，英文不超過150字母</p></div>
+        <script type="text/javascript">
+            function getStrLength(message,MaxLength) {
+                //console.log(message)
+                var reg=/{:(\w+):}/g;
+                var message=message.replace(reg,'aaa');//一个表情占3个字符，即一个汉字3个字母
+                
+                var strlength = 0; //初始定义长度为0
+                var txtval = $.trim(message);
+                var len=txtval.length;
+                for (var i = 0; i < len; i++) {
+                    if (isCN(txtval.charAt(i)) == true) {
+                        strlength = strlength + 3; //中文为2个字符
+                    } else {
+                        strlength = strlength + 1; //英文一个字符
+                    }
+                }
+                if(strlength > MaxLength){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+     
+            function isCN(str) { //判断是不是中文
+                //var regexCh = /[u00-uff]/;
+                var regexCh = /[\u4e00-\u9fa5]/;
+                return regexCh.test(str);
+            }
+
+            $(function(){
+                $("#screenBorder").width($(window).width()-12);
+                $("#screenBorder").height($(window).height()-12);
+                //$("#chat").height($(window).height()-110);
+                $("#chat").height($(window).height()-150);
+                //$("#chat").css('backgroundSize','100%,'+$("#chat").height()+'px');
+                $("#message").css('minHeight',$(window).height()-110);
+
+                $(window).resize(function(){;
+                    $("#screenBorder").width($(window).width()-12);
+                    $("#screenBorder").height($(window).height()-12);
+                    //$("#chat").height($(window).height()-110);
+                    $("#chat").height($(window).height()-150);
+                    //$("#chat").css('backgroundSize','129%,1320%');
+                    $("#message").css('minHeight',$(window).height()-110);
+                });
+                
+                //$("#message").height($(window).height()-100);
+                //alert($("#message").height())
+                $("#faceIcon").click(function(){
+                    $("#content,#faceIcon,#faceList,.action").removeClass("top").addClass("btm");
+                    $("#mask").hide();
+                    $("#faceList").toggle();
+                })
+                $("#ok,.ok").click(function(){
+                    CHAT.hideCharge();
+                });
+                /*$("#levelUp").click(function(){
+                    window.location.href="uniwebview://return?back=BuyPanel";
+                })*/
+
+                $("#faceList li img").click(function(){
+                    var src=$(this).attr("src");
+                    var title=$(this).attr("title");
+                    $("#content p").append("<img src='"+src+"' title='"+title+"' />");
+                    //$("#faceList").hide();
+                });
+
+                var $statu = $('.loading-warp .text');
+
+                var pullRefresh = $('#chat').pPullRefresh({
+                    //$el: $('.container'),
+                    //$el: $('body'),
+                    $el: $('#message'),
+                    $loadingEl: $('.loading-warp'),
+                    sendData: null,
+                    //url: 'http://192.168.15.105/nodeChat/server/getMore.php',
+                    callbacks: {
+                        pullStart: function(){
+                            $statu.text('松开开始刷新');
+                        },
+                        start: function(){
+                            $statu.text('数据刷新中···');
+                        },
+                        success: function(response){
+                            alert(response);                            
+                            $statu.text('数据刷新成功！');
+                        },
+                        end: function(){
+                            $statu.text('下拉刷新结束');
+                        },
+                        error: function(){
+                            $statu.text('找不到请求地址,数据刷新失败');
+                        }
+                    }
+                });
+            });            
+            
+        </script>
+        <script type="text/javascript" src="/js/client.js"></script>
+    </body>
+</html>

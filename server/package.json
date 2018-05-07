@@ -1,0 +1,13 @@
+{
+    "name": "realtime-server",
+    "description": "my first realtime server",
+    "version": "0.4.0",
+    "main": "index.js",
+    "dependencies": {
+        "ejs": "^2.5.7",
+        "express": "*",
+        "mobile-pull-to-refresh": "^0.1.6",
+        "mysql": "^2.15.0",
+        "socket.io": "*"
+    }
+}
